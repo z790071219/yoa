@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoa.dao.DocumentDao">
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <resultMap id="documentMap" type="com.yoa.model.Document">
+        <id property="id" column="id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="last" column="is_last"/>
+        <result property="hasDeptLimit" column="has_dept_limit"/>
+        <result property="createPerson" column="create_person"/>
+        <result property="createTime" column="create_time"/>
+        <association property="type" column="type_id" javaType="com.yoa.model.DocType"
+                     select="com.yoa.dao.DocTypeDao.selectById"/>
+        <association property="dept" column="dept_id" javaType="com.yoa.model.Department"
+                    select="com.yoa.dao.DepartmentDao.selectById"/>
+        <association property="role" column="role_id" javaType="com.yoa.model.Role"
+                     select="com.yoa.dao.RoleDao.selectById"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="documentMap">
+        select * from YOA_DOCUMENT WHERE ID=#{id}
+    </select>
+
+    <select id="selectActiveByUserId" resultMap="documentMap">
+        select * from YOA_DOCUMENT D
+        WHERE D.status='active' and
+        (EXISTS
+        (SELECT 0 FROM YOA_USER_ROLE UR,yoa_user U WHERE
+        UR.USER_ID=#{id} and D.role_id=UR.role_id and
+        D.has_dept_limit=true and U.department_id=D.dept_id and U.id=UR.USER_ID)
+        or
+        EXISTS
+        (SELECT 0 FROM YOA_USER_ROLE UR WHERE
+        UR.USER_ID=#{id} and D.role_id=UR.role_id and
+        D.has_dept_limit=false))
+    </select>
+
+    <select id="selectByUserId" resultMap="documentMap">
+        select * from YOA_DOCUMENT D,YOA_USER U WHERE D.create_person=U.USER_NAME
+        AND U.ID=#{id}
+    </select>
+
+    <select id="selectByMap" resultMap="documentMap">
+        select * from YOA_DOCUMENT
+        <where>
+            <if test="status!=null">
+                status=#{status}
+            </if>
+        </where>
+        <where>
+            <if test="typeId!=null">
+                type_id =#{typeId}
+            </if>
+        </where>
+        <where>
+            <if test="title!=null">
+                title =#{title}
+            </if>
+        </where>
+    </select>
+</mapper>

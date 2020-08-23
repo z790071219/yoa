@@ -1,0 +1,42 @@
+spring:
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost/yoa?useUnicode=true&characterEncoding=utf8&useSSL=false
+    druid:
+      validationQuery: SELECT 1
+      initialSize: 10
+      minIdle: 10
+      maxActive: 200
+      minEvictableIdleTimeMillis: 180000
+      testOnBorrow: false
+      testWhileIdle: true
+  mvc:
+    view:
+      prefix: /pages/
+      suffix: .html
+server:
+  port: 8089
+mybatis-plus:
+  mapper-locations: classpath*:/mappers/*Dao.xml
+  typeAliasesPackage: com.yoa.model
+  global-config:
+    id-type: 0
+    field-strategy: 1
+    refresh-mapper: true
+    meta-object-handler: com.yoa.config.plus.YoaMetaObjectHandler
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    jdbc-type-for-null: 'null'
+    #打印sql
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+

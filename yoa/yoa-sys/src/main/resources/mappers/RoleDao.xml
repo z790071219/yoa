@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoa.dao.RoleDao">
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <resultMap id="roleMap" type="com.yoa.model.Role">
+        <id property="id" column="id"/>
+        <collection property="permissions" column="id" javaType="ArrayList" ofType="com.yoa.model.Permissions"
+                    select="com.yoa.dao.PermissionsDao.selectByRoleId"/>
+    </resultMap>
+
+    <select id="selectRolesByUserId" resultMap="roleMap">
+        select r.* from yoa_user_role ur,yoa_role r where ur.user_id=#{id} and r.id=ur.role_id
+    </select>
+
+    <select id="selectRolesById" resultMap="roleMap">
+        select * from yoa_role where id=#{id}
+    </select>
+
+    <insert id="addRolePermissions" >
+        insert into yoa_role_permissions(role_id,permissions_id) values(#{roleId},#{permissionsId});
+    </insert>
+
+    <delete id="delRolePermissions">
+        delete from yoa_role_permissions where role_id=#{roleId} and permissions_id=#{permissionsId}
+    </delete>
+
+    <delete id="delAllRolePermissions">
+        delete from yoa_role_permissions where role_id=#{roleId}
+    </delete>
+</mapper>

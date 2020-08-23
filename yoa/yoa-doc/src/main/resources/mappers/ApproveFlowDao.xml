@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoa.dao.ApproveFlowDao">
+    <resultMap id="flowMap" type="com.yoa.model.ApproveFlow">
+        <id property="id" column="id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="hasDeptLimit" column="has_dept_limit"/>
+        <result property="roleId" column="role_id"/>
+        <result property="last" column="is_last"/>
+        <association property="role" column="role_id" javaType="com.yoa.model.Role"
+                     select="com.yoa.dao.RoleDao.selectById"/>
+    </resultMap>
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <select id="selectByTypeId" resultMap="flowMap">
+        select * from YOA_APPROVE_FLOW where type_id=#{id} order by tier
+    </select>
+
+</mapper>

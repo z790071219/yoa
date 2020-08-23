@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoa.dao.UserDao">
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <resultMap id="userMap" type="com.yoa.model.User">
+        <id property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="hashPwd" column="hash_pwd"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="fullName" column="full_name"/>
+        <result property="regTime" column="reg_time"/>
+        <association property="department" column="department_id" javaType="com.yoa.model.Department"
+            select="com.yoa.dao.DepartmentDao.selectById"/>
+        <collection property="roles" column="id" javaType="ArrayList" ofType="com.yoa.model.Role"
+                    select="com.yoa.dao.RoleDao.selectRolesByUserId"/>
+    </resultMap>
+
+    <select id="selectAllUser" resultMap="userMap">
+        select * from yoa_user
+    </select>
+
+    <select id="selectUserById" resultMap="userMap">
+        select * from yoa_user where id=#{id}
+    </select>
+
+    <select id="selectUserByUserName" resultMap="userMap">
+        select * from yoa_user where user_name=#{userName}
+    </select>
+
+    <insert id="addUserRole">
+        insert into yoa_user_role(user_id,role_id) values (#{userId},#{roleId})
+    </insert>
+
+    <delete id="delUserRole">
+        delete from yoa_user_role where user_id=#{userId} and role_id=#{roleId}
+    </delete>
+
+    <delete id="delAllUserRole">
+        delete from yoa_user_role where user_id=#{id};
+    </delete>
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoa.dao.DocTypeDao">
+    <resultMap id="docTypeMap" type="com.yoa.model.DocType">
+        <id property="id" column="id"/>
+        <result property="typeName" column="type_name"/>
+        <collection property="approveFlows" column="id" javaType="ArrayList" ofType="com.yoa.model.ApproveFlow"
+                    select="com.yoa.dao.ApproveFlowDao.selectByTypeId"/>
+    </resultMap>
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <select id="selectById" resultMap="docTypeMap">
+        select * from YOA_DOCUMENT_TYPE where id=#{id}
+    </select>
+
+    <select id="selectAll" resultMap="docTypeMap">
+        select * from YOA_DOCUMENT_TYPE
+    </select>
+
+</mapper>

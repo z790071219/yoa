@@ -1,0 +1,154 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>编辑公文</title>
+    <link rel="icon" type="image/png" href="/assets/i/favicon.png"/>
+    <link rel="apple-touch-icon-precomposed" href="/assets/i/app-icon72x72@2x.png"/>
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <link rel="stylesheet" href="/assets/css/amazeui.min.css" />
+    <link rel="stylesheet" href="/assets/css/admin.css"/>
+    <link rel="stylesheet" href="/assets/css/app.css"/>
+    <script src="/assets/js/echarts.min.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/js/document-form.js"></script>
+
+</head>
+
+<body data-type="index">
+<!--头部开始-->
+<div th:replace="include/header :: header"></div>
+<!--头部结束-->
+<!--body开始-->
+<div  class="tpl-page-container tpl-page-header-fixed">
+    <!--菜单开始-->
+    <div th:replace="include/menu::menu"></div>
+    <!--菜单结束-->
+
+    <!--main开始-->
+    <div class="tpl-content-wrapper">
+        <div class="tpl-content-page-title">
+            编辑公文
+        </div>
+        <ol class="am-breadcrumb">
+            <li><a href="#" class="am-icon-home">首页</a></li>
+            <li class="am-active">表单</li>
+        </ol>
+        <div class="tpl-portlet-components">
+            <div class="portlet-title">
+                <div class="caption font-green bold">
+                    <span class="am-icon-code"></span> 公文
+                </div>
+
+            </div>
+
+            <div class="tpl-block">
+
+                <div class="am-g">
+                    <div class="tpl-form-body tpl-form-line">
+                        <form class="am-form tpl-form-line-form">
+                            <input type="hidden" id="id" th:value="${document.id}">
+                            <input type="hidden" id="tier" th:value="${document.tier}">
+                            <input type="hidden" id="deptId" th:value="${document.deptId}">
+                            <input type="hidden" id="roleId" th:value="${document.roleId}">
+                            <input type="hidden" id="last" th:value="${document.last}">
+                            <input type="hidden" id="hasDeptLimit" th:value="${document.hasDeptLimit}">
+                            <input type="hidden" id="comment" th:value="${document.comment}">
+                            <div class="am-form-group">
+                                <label class="am-u-sm-3 am-form-label">标题 </label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" class="tpl-form-input"  id="title" th:disabled="${document.status=='active'||document.status=='approved'}"
+                                           th:value="${document.title}" placeholder="请输入标题文字">
+                                    <small>请填写标题文字10-20字左右。</small>
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label  class="am-u-sm-3 am-form-label" >公文类型 </label>
+                                <div class="am-u-sm-9">
+                                    <select data-am-selected="{searchBox: 1}" id="type" th:disabled="${document.status=='active'||document.status=='approved'}">
+                                        <option th:each="docType:${docTypeList}" th:selected="${document.typeId}==${docType.id}" th:value="${docType.id}" th:text="${docType.typeName}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label class="am-u-sm-3 am-form-label">公文状态 </label>
+                                <div class="am-u-sm-9">
+                                    <select disabled="disabled" id="status" data-am-selected="{searchBox: 1}">
+                                        <option th:if="${document.status}=='active'" th:value="${document.status}">审批中</option>
+                                        <option th:if="${document.status}=='new'" th:value="${document.status}">未提交</option>
+                                        <option th:if="${document.status}=='approved'" th:value="${document.status}">已审批</option>
+                                        <option th:if="${document.status}=='refuse'" th:value="${document.status}">被拒绝</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label  class="am-u-sm-3 am-form-label">公文内容</label>
+                                <div class="am-u-sm-9">
+                                    <textarea class="" rows="10"
+                                              id="content" placeholder="请输入文章内容" th:text="${document.content}"  th:disabled="${document.status=='active'||document.status=='approved'}">
+                                    </textarea>
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label class="am-u-sm-3 am-form-label">创建人 </label>
+                                <div class="am-u-sm-9">
+                                    <input type="text"  class="tpl-form-input"  disabled="disabled" id="createPerson"
+                                           th:value="${document.createPerson}">
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label class="am-u-sm-3 am-form-label">创建时间 </label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" class="tpl-form-input"  disabled="disabled" id="createTime"
+                                           th:value="${document.createTime}">
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <label class="am-u-sm-3 am-form-label">最后批核人 </label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" class="tpl-form-input"  disabled="disabled" id="approver"
+                                           th:value="${document.approver}">
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <div class="am-u-sm-9 am-u-sm-push-3">
+                                    <button type="button" class="am-btn am-btn-primary tpl-btn-bg-color-success " onclick="documentForm.submitForm('/save')" th:if="${document.status!='active'&&document.status!='approved'}">保存</button>
+                                    <button type="button" class="am-btn am-btn-primary tpl-btn-bg-color-success " onclick="documentForm.submitForm('/submit')"  th:if="${document.status=='new'||document.status=='refuse'}">提交</button>
+                                    <button type="button" class="am-btn am-btn-primary tpl-btn-bg-color-success " onclick="documentForm.submitForm('/approve')"  th:if="${document.status}=='active'">批核</button>
+                                    <button type="button" class="am-btn am-btn-primary tpl-btn-bg-color-success " onclick="documentForm.submitForm('/refuse')"  th:if="${document.status}=='active'">拒绝</button>
+                                    <button type="button" class="am-btn am-btn-primary tpl-btn-bg-color-success " onclick="javascript:history.go(-1);">返回</button>
+                                </div>
+                                </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <!--main结束-->
+</div>
+<!--body结束-->
+
+
+
+<script src="/assets/js/amazeui.min.js"></script>
+<script src="/assets/js/iscroll.js"></script>
+<script src="/assets/js/app.js"></script>
+</body>
+
+</html>

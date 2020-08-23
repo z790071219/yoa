@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoa.dao.MenuDao">
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <resultMap id="menuMap" type="com.yoa.model.Menu">
+        <id property="id" column="id"/>
+        <result property="pNode" column="parent_node"/>
+        <result property="permissionsId" column="permissions_id"/>
+        <association property="permissions" column="permissions_id" javaType="com.yoa.model.Permissions"
+                     select="com.yoa.dao.PermissionsDao.selectById"/>
+    </resultMap>
+
+    <select id="findByParentId" resultMap="menuMap">
+        select * from yoa_menu where parent_node=#{node}
+    </select>
+
+    <select id="selectAllMenu" resultMap="menuMap">
+        select * from yoa_menu
+    </select>
+
+    <select id="selectMenuByUserId" resultMap="menuMap">
+        select distinct m.* from
+        yoa_menu m,yoa_user_role ur,yoa_role_permissions rp
+        where (ur.user_id=#{userId} and ur.role_id=rp.role_id and rp.permissions_id=m.permissions_id) or m.permissions_id is null
+    </select>
+
+    <select id="selectMenuByRoleId" resultMap="menuMap">
+        select distinct m.* from
+        yoa_menu m,yoa_role_permissions rp
+        where (rp.role_id=#{roleId} and rp.permissions_id=m.permissions_id) or m.permissions_id is null
+    </select>
+
+    <select id="selectById" resultMap="menuMap">
+        select * from yoa_menu where id=#{id}
+    </select>
+</mapper>
